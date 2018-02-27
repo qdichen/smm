@@ -1,6 +1,6 @@
 from picamera import PiCamera
 import picamera
-from time import sleep, time
+from time import sleep, time, localtime
 import numpy as np
 import datetime
 import threading
@@ -62,7 +62,7 @@ class MotionDetector:
     def next(self, now, prev):
         # print prev, now
         diff = self.different(prev, now)
-        print diff
+        print(diff)
         self.seq.append(diff)
         global LISTLEN
         if len(self.seq) > LISTLEN:
@@ -128,14 +128,16 @@ try:
         camera.wait_recording(0.3)
         camera.capture(output, 'rgb')
         write_now = md.next(output, prev)
-        print prev, output
+        print(prev, output)
         temp = prev
         prev = output
         output = temp
-        print md.status
+        print(md.status)
         if write_now:
             # camera.wait_recording(10)
-            write_video(stream, "test.h264")
+            tt = localtime()
+            filename = str(tt.tm_mon) + '_' + str(tt.tm_mday) + '_' + str(tt.tm_hour) + str(tt.tm_min) + '_' + str(tt.tm_sec) + '.h264'
+            write_video(stream, filename)
 finally:
     camera.stop_recording()
 
